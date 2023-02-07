@@ -93,7 +93,7 @@ if __name__ == '__main__':
             corpusDocumentTmp += line
 '''
 
-    vocabulary = parseDocumentCorpus(corpusDocument)
+    vocabulary = documentParser(corpusDocument)
     with open("bow.txt", "w") as textFile2:
         for item in vocabulary:
             textFile2.write(item+'\n')
