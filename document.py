@@ -3,7 +3,6 @@ from pathlib import Path
 import re
 from nltk.tokenize import word_tokenize
 
-
 def readAllFile(path):
     '''
     Reads all the files
@@ -47,28 +46,33 @@ def removeStopWord(corpus):
 
     @return: string without stopwords and tags 
     '''
+
     corpusToken = word_tokenize(corpus)
     stopwordsToken=  retrievingStopwords()
     tokensWithoutStopwords = [word for word in corpusToken if not word in stopwordsToken]
     return tokensWithoutStopwords
 
 
-def parseDocumentCorpus(corpus):
+def documentParser(corpus):
     '''
 
+    @param corpus: string value of all documents
+    @return: return dictionary that key is the document number and value is the rest of document
     '''
-    tagRegex = '<head>(.+?)</head>|<text>((.|\\n)+?)</text>'
-    corpusWithDuplicates = []
+    docRegx = '<DOC>((.|\\n)+?)</DOC>'
+    dividerRegex = '<DOCNO>(.+?)</DOCNO>(.+)'
 
-    headTextCorpusMatch = re.findall(tagRegex,corpus)
+    dict = {}
 
-    if headTextCorpusMatch:
-        for match in headTextCorpusMatch:
-            for submatch in match:
-                corpusWithDuplicates = corpusWithDuplicates + removeStopWord(submatch)
+    tmpdoc = re.findall(docRegx, corpus)
 
-        vocabulary = set(corpusWithDuplicates) 
-        return vocabulary
+    if tmpdoc:
+        for match in tmpdoc:
+            docList = re.findall(dividerRegex, match[0], flags=re.DOTALL)
+            if docList:
+                #to remove punctuationa and markups
+                #TODO re-think about numbers
+                dict[docList[0][0]] = re.sub("[^\w\s]"," ",re.sub("<[^>]*>", "",docList[0][1]))
 
     else:
         print("No match found.")
@@ -76,10 +80,9 @@ def parseDocumentCorpus(corpus):
 
 if __name__ == '__main__':
 
-    '''
 
-    corpusDocument = readAllFile("src\coll")
-    with open("corpus.txt", "w") as textFile:
+    corpusDocument = readAllFile("test")
+    with open("corpustest.txt", "w") as textFile:
             textFile.write(corpusDocument)
     
     '''
@@ -88,9 +91,9 @@ if __name__ == '__main__':
     with open('test.txt') as myFile:
         for line in myFile:
             corpusDocumentTmp += line
+'''
 
-
-    vocabulary = parseDocumentCorpus(str.lower(corpusDocumentTmp))
+    vocabulary = parseDocumentCorpus(corpusDocument)
     with open("bow.txt", "w") as textFile2:
         for item in vocabulary:
             textFile2.write(item+'\n')
