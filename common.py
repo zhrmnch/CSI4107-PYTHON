@@ -28,7 +28,8 @@ def readAllFile(path):
 
 def retrievingStopwords():
     '''
-    Reads a file containing all stopwords and make a set of it
+    Reads a file containing all stopwords and make a dictionary of stopwords {stopword: None}
+    used dictionary for speed
 
     @param: stopwordArray: array of words containing stop words (the files are taken from instructions)
     @return: a list containing all stopwords
@@ -73,42 +74,8 @@ def df_to_idf(vocab, document_index):
         vocab[word]['idf'] = log(len(document_index)/vocab[word]['df'], 2)
     return vocab
 
-def inverseIndex(document_index):
-    '''
-    calculate a matrix containing all the inverse indeces
-    @param document_index:
-    @return: dictiory with f values
-    '''
 
 
-    #make dictionary of all words and their occurance over the corpus vocab = {word:{ df: # , docf: { docno: tf}}}
-    vocab = {}
-    for k,v in document_index.items(): # iterate through all documents
-        max = 0
-        for word in v:
-            # Case where the word does not exist in the vocabulary
-            if not word in vocab.keys():
-                #adding the word to the vocabulary and document number - update the df
-                vocab[word] = {'docf':{}}
-                vocab[word]['df'] = 1
-                vocab[word]['docf'][k] = 1
-            else:
-                # Case where we add a document where the word exists for the first time
-                if k not in vocab[word]['docf'].keys():
-                    vocab[word]['docf'][k] = 1
-                    vocab[word]['df'] += 1
-                # Case if the word appears multiple time in the document
-                else:
-                    vocab[word]['docf'][k] += 1
-            # Finding the word with highest frequency for each document
-            if vocab[word]['docf'][k] > max:
-                max = vocab[word]['docf'][k]
-        for word in vocab.keys():
-            if k in vocab[word]['docf'].keys():
-                vocab[word]['docf'][k] = vocab[word]['docf'][k] / max
-    inverse_index = df_to_idf(vocab, document_index)
-
-    return inverse_index
 
 def calculateWeights(inverse_index):
     '''
