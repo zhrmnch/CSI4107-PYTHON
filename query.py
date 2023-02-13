@@ -7,23 +7,21 @@ def parse_query_with_title(query_corpus):
     @param query_corpus: string of all queries
     @return: dictionary containing all queries
     '''
-    extract_query_regx = '<top>((.|\\n)+?)</top>'
-    extract_content_regex = '<num>((.|\\n)+?)<title>((.|\\n)+?)<desc>'
+    extract_query_regx = '<top>(.+?)</top>'
+    extract_content_regex = '<num>(.+?)<title>(.+?)<desc>'
 
-    queries = {}
-
-    all_queries = re.findall(extract_query_regx, query_corpus)
-
+    all_queries = re.findall(extract_query_regx, query_corpus, flags=re.DOTALL)
+    queries ={}
     if all_queries:
         for query in all_queries:
-            q = re.findall(extract_content_regex, query_corpus)
-            num = re.sub("\n","",q[0][0])
-            #to remove punctuationa and markups and numbers
-            queries[num] = re.sub("\d+","",re.sub("[^\w\s]|_"," ",re.sub("<[^>]*>", "", q[0][2])))
+            q = re.findall(extract_content_regex, query, flags=re.DOTALL)
+            num = re.sub("\n", "", q[0][0])
+            queries[num] = re.sub("\d+", "", re.sub("[^\w\s]|_", " ", re.sub("<[^>]*>", "", q[0][1])))
     else:
         print("No match found.")
-
     return queries
+
+
 
 def parse_query_with_title_desc(query_corpus):
     '''
@@ -32,19 +30,20 @@ def parse_query_with_title_desc(query_corpus):
     @return: dictionary containing all queries
     '''
 
-    extract_query_regx = '<top>((.|\\n)+?)</top>'
-    extract_content_regex = '<num>((.|\\n)+?)<title>((.|\\n)+?)<narr>'
+    extract_query_regx = '<top>(.+?)</top>'
+    extract_content_regex = '<num>(.+?)<title>(.+?)<narr>'
 
     queries = {}
 
-    all_queries = re.findall(extract_query_regx, query_corpus)
+    all_queries = re.findall(extract_query_regx, query_corpus, flags=re.DOTALL)
 
     if all_queries:
         for query in all_queries:
-            q = re.findall(extract_content_regex, query_corpus)
+            q = re.findall(extract_content_regex, query, flags = re.DOTALL)
             num = re.sub("\n","",q[0][0])
             #to remove punctuationa and markups and numbers
-            queries[num] = re.sub("\d+","",re.sub("[^\w\s]|_"," ",re.sub("<[^>]*>", "", q[0][2])))
+            queries[num] = re.sub("\d+","",re.sub("[^\w\s]|_"," ",re.sub("<[^>]*>", "", q[0][1])))
+
     else:
         print("No match found.")
 
@@ -55,7 +54,7 @@ def inverse_index_query(document_inverted_index,query_index):
     '''
     calculate a matrix containing all tf-idf s for all given queries
     @param document_index:
-    @return: dictiory with f values
+    @return: dictionary with f values
     '''
 
     #make dictionary of all words and their occurance over the corpus vocab = {word:{ df: # , docf: { docno: tf}}}
