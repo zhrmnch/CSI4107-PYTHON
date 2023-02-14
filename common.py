@@ -77,7 +77,7 @@ def df_to_idf(vocab, document_index):
 
 
 
-def calculateWeights(inverse_index):
+def calculate_weights(inverse_index):
     '''
        Calculates the weight of each word in each document
        @param inverse_index:
@@ -90,6 +90,4 @@ def calculateWeights(inverse_index):
         for docno in v['docf'].keys():
             weights[k][docno] = inverse_index[k]['idf'] * inverse_index[k]['docf'][docno]
     return weights
-
-
 

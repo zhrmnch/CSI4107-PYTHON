@@ -50,42 +50,6 @@ def parse_query_with_title_desc(query_corpus):
     return queries
 
 
-def inverse_index_query(document_inverted_index,query_index):
-    '''
-    calculate a matrix containing all tf-idf s for all given queries
-    @param document_index:
-    @return: dictionary with f values
-    '''
-
-    #make dictionary of all words and their occurance over the corpus vocab = {word:{ df: # , docf: { docno: tf}}}
-    vocab = {}
-    for k,v in query_index.items(): # iterate through all documents
-        max = 0
-        for word in v:
-            # Case where the word does not exist in the vocabulary
-            if not word in vocab.keys():
-                #adding the word to the vocabulary and document number - update the df
-                vocab[word] = {'docf':{}}
-                vocab[word]['df'] = 1
-                vocab[word]['docf'][k] = 1
-            else:
-                # Case where we add a document where the word exists for the first time
-                if k not in vocab[word]['docf'].keys():
-                    vocab[word]['docf'][k] = 1
-                    vocab[word]['df'] += 1
-                # Case if the word appears multiple time in the document
-                else:
-                    vocab[word]['docf'][k] += 1
-            # Finding the word with highest frequency for each document
-            if vocab[word]['docf'][k] > max:
-                max = vocab[word]['docf'][k]
-        for word in vocab.keys():
-            if k in vocab[word]['docf'].keys():
-                vocab[word]['docf'][k] = vocab[word]['docf'][k] / max
-            vocab[word]['idf'] = document_inverted_index[word]['idf']
-
-    return vocab
-
 
 def pre_process_query_corpus_with_title_desc(query_corpus):
     '''
@@ -102,4 +66,38 @@ def pre_process_query_corpus_with_title(query_corpus):
     @return:
     '''
     return common.removes_stopWord_and_stemming(parse_query_with_title(query_corpus))
+
+
+def query_vectors(inverse_index_doc, query_index):
+    '''
+    calculate a matrix containing all tf-idf of the terms in all given queries
+    @param inverse_index_doc: the inversed index of the documents corpus
+    @param query_index: the query index
+    @return: dictionary with f values
+    '''
+
+    #make dictionary of all words and their occurance over the corpus vectors = {num:{ word: weight}}
+    vectors = {}
+    for k,v in query_index.items(): # iterate through all queries
+        max = 0
+        vectors[k] ={}
+        for word in v:
+            # Case where the word does not exist in the vocabulary
+            if word not in vectors[k].keys():
+                # adding the word
+                vectors[k][word] = 1
+            else:
+                # incrementing the word frequency
+                vectors[k][word] += 1
+            if vectors[k][word] > max:
+                max = vectors[k][word]
+        for word in vectors[k].keys():
+            # normalizing the frequencies
+            if word in inverse_index_doc:
+                # weighting the terms wiq = (0.5 + 0.5 tfiq)∙idfi
+                vectors[k][word] = inverse_index_doc[word]['idf'] * (0.5 + 0.5 * vectors[k][word] / max)
+            else:
+                # Gives a weight of zero to words that do not appear in the corpus
+                vectors[k][word] = 0
+    return vectors
 
