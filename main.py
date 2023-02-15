@@ -4,11 +4,14 @@ import query
 import time
 import metric
 import json
+'''
+This class is used to run the experiment and generate Json files according to each step.
+'''
 
 
 def read_document():
     '''
-
+    reads all the documents in the src/coll
     @return: None
     '''
     print("---> Reading documents")
@@ -21,8 +24,7 @@ def read_document():
 
 def pre_process_document():
     '''
-
-    @param corpus:
+    pre-process document to use in IR system
     @return: None
     '''
     with open('target/corpus_test.json') as json_file:
@@ -35,6 +37,10 @@ def pre_process_document():
     print("--- %s seconds ---" % (time.time() - start_time))
 
 def calculate_inverse_index_document():
+    '''
+    calculates inverse index for the documents
+    @return: None
+    '''
     with open('target/doc_index.json') as json_file:
         doc_indexed = json.load(json_file)
     print("---> Calculating inverse index")
@@ -45,6 +51,10 @@ def calculate_inverse_index_document():
     print("--- %s seconds ---" % (time.time() - start_time))
 
 def calculate_weight_document():
+    '''
+    calculates weights for document
+    @return: None
+    '''
     with open('target/inverse_index.json') as json_file:
         inverse_index_doc = json.load(json_file)
     print("---> Calculating Weights")
@@ -55,6 +65,10 @@ def calculate_weight_document():
     print("--- %s seconds ---" % (time.time() - start_time))
 
 def reading_queries():
+    '''
+    reading all test queries
+    @return: None
+    '''
     print("---> Reading Queries ....")
     start_time = time.time()
     corpus_query = common.readAllFile("query")
@@ -63,6 +77,11 @@ def reading_queries():
     print("--- %s seconds ---" % (time.time() - start_time))
 
 def pre_process_query_title_w_des():
+    '''
+
+    pre process of queri with title and its description
+    @return: None
+    '''
     with open('target/corpus_query.json') as json_file:
         corpus_query = json.load(json_file)
     print("---> Pre-processing Queries with Title and Description")
@@ -73,6 +92,10 @@ def pre_process_query_title_w_des():
     print("--- %s seconds ---" % (time.time() - start_time))
 
 def calculate_query_vector_w_desc():
+    '''
+    calculates query vestor including description
+    @return: None
+    '''
     with open('target/query_index_w_des.json') as json_file:
         query_indexed_w_des = json.load(json_file)
     with open('target/inverse_index.json') as json_file:
@@ -85,13 +108,17 @@ def calculate_query_vector_w_desc():
     print("--- %s seconds ---" % (time.time() - start_time))
 
 def result_w_des():
+    '''
+    calculates similarity measures and rank to generate the result  when we include description
+    @return: None
+    '''
     with open('target/query_vectors_w_des.json') as json_file:
         vectors_w_des = json.load(json_file)
     with open('target/weights.json') as json_file:
         weights = json.load(json_file)
     print("---> Result")
     start_time = time.time()
-    with open("target/result_w_des.json", "w") as textFile2:
+    with open("target/result_w_des.txt", "w") as textFile2:
         for k, v in vectors_w_des.items():
             ranked_series = metric.ranking(metric.similarity_measure(vectors_w_des[k], weights))
             for doc_no in ranked_series.index.values.tolist():
@@ -101,6 +128,10 @@ def result_w_des():
     print("--- %s seconds ---" % (time.time() - start_time))
 
 def pre_process_query_title():
+    '''
+    pre process of queri with title
+    @return: None
+    '''
     with open('target/corpus_query.json') as json_file:
         corpus_query = json.load(json_file)
     print("---> Pre-processing Queries with Title ")
@@ -111,6 +142,10 @@ def pre_process_query_title():
     print("--- %s seconds ---" % (time.time() - start_time))
 
 def calculate_query_vector():
+    '''
+    calculates query vestor
+    @return: None
+    '''
     with open('target/query_index.json') as json_file:
         query_indexed = json.load(json_file)
     with open('target/inverse_index.json') as json_file:
@@ -124,6 +159,10 @@ def calculate_query_vector():
 
 
 def result():
+    '''
+    calculates similarity measures and rank to generate the result
+    @return: None
+    '''
     with open('target/query_vectors.json') as json_file:
         vectors = json.load(json_file)
     with open('target/weights.json') as json_file:

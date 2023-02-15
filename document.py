@@ -1,7 +1,9 @@
 import re
 import time
 import common
-
+'''
+    Consists of methods to parse document, generate indexed documents. 
+'''
 
 def documentParser(corpus):
     '''

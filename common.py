@@ -3,6 +3,10 @@ from nltk.tokenize import word_tokenize
 from nltk.stem import *
 from math import log
 
+'''
+    Contains methods that is in common with processing queries and document. 
+'''
+
 
 
 def readAllFile(path):
@@ -32,7 +36,7 @@ def retrievingStopwords():
     used dictionary for speed
 
     @param: stopwordArray: array of words containing stop words (the files are taken from instructions)
-    @return: a list containing all stopwords
+    @return: a dictionary containing all stopwords
     '''
     stopwordArray= {}
     with open('src\stopwords.txt') as myFile:
@@ -67,7 +71,7 @@ def df_to_idf(vocab, document_index):
     Transforms the dictionary conitaining df and calculate idf and update the dictionary with its value
     @param vocab: The inverse index
     @param document_index: The document index
-    @return:
+    @return: a dictionary that contains words, documents that is used, idf, and tf values
     '''
 
     for word in vocab.keys():
@@ -81,7 +85,7 @@ def calculate_weights(inverse_index):
     '''
        Calculates the weight of each word in each document
        @param inverse_index:
-       @return:
+       @return: dictionary containing the weights for each word
     '''
 
     weights = {}

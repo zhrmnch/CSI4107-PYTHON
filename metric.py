@@ -3,6 +3,10 @@ import numpy as np
 from scipy.spatial.distance import cosine
 import json
 
+'''
+    Includes functionality that generate similarity measurements and ranking. 
+'''
+
 def similarity_measure(query_vector, doc_weights, is_cosine = True):
     '''
     calculate the distance between the query vector and the document vector

@@ -1,6 +1,9 @@
 import re
 import common
 
+'''
+     Includes methods to parse queries and generate query vectors. 
+'''
 def parse_query_with_title(query_corpus):
     '''
     extract each query with respect to the title
