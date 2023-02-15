@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from scipy.spatial.distance import cosine
+import json
 
 def similarity_measure(query_vector, doc_weights, is_cosine = True):
     '''
@@ -10,25 +11,20 @@ def similarity_measure(query_vector, doc_weights, is_cosine = True):
     @param is_cosine: uses the cosine distance if true, else it uses the dot product
     @return: returns a Pandas Series with the similarity measure for each document given a certain query
     '''
-    # transforming the weight dictionary into a dataframe
-    dt = pd.DataFrame(doc_weights)
     # transforming the query_vector to a Panda array
     q = pd.Series(query_vector)
-    q = q[q != 0]
-    # taking the subset of the vocabulary with query terms
-    dt = dt[q.index.intersection(dt.columns)]
-
+    # transforming the weight dictionary into a dataframe
+    dt = pd.DataFrame.from_dict({k: doc_weights[k] for k in q.index if k in doc_weights.keys()})
+    # If a word in the query does not exist in the corpus
     if q.index.difference(dt.columns).size != 0:
         dt[q.index.difference(dt.columns)] = 0
-    # dropping irrelevant document
-    dt = dt.dropna(how = 'all')
-    # Giving a wight of zero if term id not in document
+    # Giving a weight of zero if term is not in document
     dt = dt.fillna(0)
     # applying the chosen similarity function
     if not is_cosine:
         return dt.apply(lambda row: np.dot(row, q.array), axis=1)
     else:
-        return dt.apply(lambda row: 1-cosine(row, q.array), axis=1)
+        return dt.apply(lambda row: 1 - cosine(row, q.array), axis=1)
 
 
 

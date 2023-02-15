@@ -87,7 +87,7 @@ def calculate_query_vector_w_desc():
 def result_w_des():
     with open('target/query_vectors_w_des.json') as json_file:
         vectors_w_des = json.load(json_file)
-    with open('target/weights.json.json') as json_file:
+    with open('target/weights.json') as json_file:
         weights = json.load(json_file)
     print("---> Result")
     start_time = time.time()
@@ -123,14 +123,13 @@ def calculate_query_vector():
     print("--- %s seconds ---" % (time.time() - start_time))
 
 
-def result_w_des():
+def result():
     with open('target/query_vectors.json') as json_file:
         vectors = json.load(json_file)
-    with open('target/weights.json.json') as json_file:
+    with open('target/weights.json') as json_file:
         weights = json.load(json_file)
     print("---> Result")
     start_time = time.time()
-    #todo
     with open("target/result.txt", "w") as textFile2:
         for k, v in vectors.items():
             ranked_series = metric.ranking(metric.similarity_measure(vectors[k], weights))
@@ -149,13 +148,11 @@ if __name__ == '__main__':
     #print("---> TEST WITH TITLE AND DESCRIPTION")
     #pre_process_query_title_w_des()
     #calculate_query_vector_w_desc()
+    #result_w_des()
     print("---> TEST WITH TITLE")
+    pre_process_query_title()
+    calculate_query_vector()
+    result()
 
-'''
-
-   
-
-
-'''
 
 
